@@ -145,6 +145,125 @@ public class Library {
         return author; // Fallback to entire string
     }
 
+    // Search methods (Only showcase first 10 results)
+    public List<Book> searchByTitle(String title) {
+        List<Book> results = new ArrayList<>();
+        String target = title.toLowerCase();
+
+        for (Book book : books) {
+            if (book.getTitle().toLowerCase().contains(target)) {
+                results.add(book);
+            }
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("❌ No books found matching title: \"" + title + "\"");
+        } else {
+            System.out.println("🔍 Found " + results.size() + " book(s) matching title: \"" + title + "\"");
+
+            // Show only first 10 results if many found
+            int displayLimit = Math.min(results.size(), 10);
+            if (results.size() > 10) {
+                System.out.println("   Showing first " + displayLimit + " results:");
+            }
+
+            for (int i = 0; i < displayLimit; i++) {
+                Book book = results.get(i);
+                System.out.println("   " + (i + 1) + ". " + book.getTitle() +
+                        " by " + book.getAuthor() +
+                        " (ISBN: " + book.getISBN() +
+                        ", Year: " + book.getPubYear() +
+                        ", Available: " + (book.getAvailability() ? "Yes" : "No") + ")");
+            }
+
+            if (results.size() > 10) {
+                System.out.println("   ... and " + (results.size() - 10) + " more book(s)");
+            }
+        }
+
+        return results;
+    }
+
+    public List<Book> searchByAuthor(String author) {
+        List<Book> results = new ArrayList<>();
+        String target = author.toLowerCase();
+
+        for (Book book : books) {
+            if (book.getAuthor().toLowerCase().contains(target)) {
+                results.add(book);
+            }
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("❌ No books found matching author: \"" + author + "\"");
+        } else {
+            System.out.println("🔍 Found " + results.size() + " book(s) matching author: \"" + author + "\"");
+
+            // Show only first 10 results if many found
+            int displayLimit = Math.min(results.size(), 10);
+            if (results.size() > 10) {
+                System.out.println("   Showing first " + displayLimit + " results:");
+            }
+
+            for (int i = 0; i < displayLimit; i++) {
+                Book book = results.get(i);
+                System.out.println("   " + (i + 1) + ". " + book.getTitle() +
+                        " by " + book.getAuthor() +
+                        " (ISBN: " + book.getISBN() +
+                        ", Year: " + book.getPubYear() +
+                        ", Available: " + (book.getAvailability() ? "Yes" : "No") + ")");
+            }
+
+            if (results.size() > 10) {
+                System.out.println("   ... and " + (results.size() - 10) + " more book(s)");
+            }
+        }
+
+        return results;
+    }
+
+    public Book searchByISBN(Long ISBN) {
+        for (Book book : books) {
+            if (book.getISBN().equals(ISBN)) {
+                System.out.println("🔍 Book found with ISBN: " + ISBN);
+                // Display Found Book:
+                System.out.println("   Title: " + book.getTitle());
+                System.out.println("   Author: " + book.getAuthor());
+                System.out.println("   Year: " + book.getPubYear());
+                System.out.println("   Available: " + (book.getAvailability() ? "Yes" : "No"));
+                return book;
+            }
+        }
+
+        System.out.println("❌ No book found with ISBN: " + ISBN);
+        return null;
+    }
+
+    // Borrow/Return Methods
+    public boolean borrowBook(Long ISBN) {
+        Book book = searchByISBN(ISBN);
+        if (book != null && book.getAvailability()) {
+            book.setAvailability(false);
+            System.out.println("✅ Successfully borrowed: " + book.getTitle());
+            return true;
+        } else if (book != null && !book.getAvailability()) {
+            System.out.println("❌ Book is already borrowed: " + book.getTitle());
+        }
+        return false;
+    }
+
+    public boolean returnBook(Long ISBN) {
+        Book book = searchByISBN(ISBN);
+        if (book != null && !book.getAvailability()) {
+            book.setAvailability(true);
+            System.out.println("✅ Successfully returned: " + book.getTitle());
+            return true;
+        } else if (book != null && book.getAvailability()) {
+            System.out.println("❌ Book was not borrowed: " + book.getTitle());
+        }
+        return false;
+    }
+
     // File Loading
     public boolean loadBooksFromFile(String filename) {
         try {
@@ -225,32 +344,7 @@ public class Library {
         }
     }
 
-    // Empty other methods
-    public List<Book> searchByTitle(String title) {
-        System.out.println("searchByTitle() - Not yet implemented");
-        return new ArrayList<>();
-    }
-
-    public List<Book> searchByAuthor(String author) {
-        System.out.println("searchByAuthor() - Not yet implemented");
-        return new ArrayList<>();
-    }
-
-    public Book searchByISBN(Long ISBN) {
-        System.out.println("searchByISBN() - Not yet implemented");
-        return null;
-    }
-
-    public boolean borrowBook(Long ISBN) {
-        System.out.println("borrowBook() - Not yet implemented");
-        return false;
-    }
-
-    public boolean returnBook(Long ISBN) {
-        System.out.println("returnBook() - Not yet implemented");
-        return false;
-    }
-
+    // Empty methods
     public boolean addBook(Book book) {
         System.out.println("addBook() - Not yet implemented");
         return false;
