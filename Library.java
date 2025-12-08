@@ -6,12 +6,10 @@ import java.util.*;
 public class Library {
    private HashMap<Long, Book> catalog;
    private String FILE_HEADER = "";
-   // REMOVED: List<Book> availableBooks;
 
    // --- CONSTRUCTOR ---
    public Library(String filename){
       this.catalog = new HashMap<>();
-      // REMOVED: this.availableBooks = new ArrayList<>();
 
       File f = new File(filename);
       try(Scanner sc = new Scanner(f)){
@@ -74,10 +72,8 @@ public class Library {
       catch(FileNotFoundException e){
          System.out.printf("File '%s' not found. Starting with empty library.\n", filename);
       }
-      // REMOVED: Logic to populate and sort the now-removed availableBooks field
    }
 
-   // REMOVED: private void updateAvailableBooks() { ... }
 
    public void addBook(Book book){
       if(catalog.containsKey(book.getISBN())){
@@ -86,7 +82,6 @@ public class Library {
       else{
          catalog.put(book.getISBN(), book);
          System.out.println(book.getTitle() + " added to library.");
-         // REMOVED: updateAvailableBooks();
       }
    }
 
@@ -94,7 +89,6 @@ public class Library {
       if(catalog.containsKey(isbn)){
          Book removed = catalog.remove(isbn);
          System.out.println(removed.getTitle() + " removed from catalog.");
-         // REMOVED: updateAvailableBooks();
          return true;
       } else {
          System.out.println("Error: Book with ISBN " + isbn + " not found.");
@@ -107,7 +101,6 @@ public class Library {
       if(book != null && book.getAvailability() > 0){
          book.setAvailability(0);
          System.out.println(book.getTitle() + " has been borrowed.");
-         // REMOVED: updateAvailableBooks();
          return true;
       } else if(book != null){
          System.out.println("Book is currently unavailable");
@@ -122,7 +115,6 @@ public class Library {
       if(book != null && book.getAvailability() == 0){
          book.setAvailability(1);
          System.out.println(book.getTitle() + " returned. Thank you.");
-         // REMOVED: updateAvailableBooks();
          return true;
       } else if (book != null) {
          System.out.println(book.getTitle() + " was already available.");
@@ -150,14 +142,11 @@ public class Library {
       return results;
    }
 
-   //Sorted by Title page view (REFACTORED to filter/sort on demand)
    public void viewAvailableBooks(Scanner scanner) {
       int PAGE_SIZE = 10;
       int startIndex = 0;
 
       while (true) {
-         // REFACTORED: Create, filter, and sort the list every loop iteration
-         // This ensures availability changes (like a borrow) are reflected immediately
          List<Book> availableBooks = new ArrayList<>();
          for (Book book : catalog.values()) {
             if (book.getAvailability() > 0) {
@@ -165,7 +154,6 @@ public class Library {
             }
          }
          availableBooks.sort(Comparator.comparing(Book::getTitle));
-         // End of REFACTORED logic
 
          int totalBooks = availableBooks.size();
          if (totalBooks == 0) {
@@ -235,7 +223,6 @@ public class Library {
       System.out.println("--- End of List ---");
    }
 
-   //Views the borrowed books (Already follows the filter-on-demand pattern)
    public void viewBorrowedBooks(Scanner scanner) {
       final int PAGE_SIZE = 10;
       int startIndex = 0;
@@ -248,7 +235,6 @@ public class Library {
             }
          }
 
-         // Sort borrowed books by title
          borrowedBooks.sort(Comparator.comparing(Book::getTitle));
 
          int totalBooks = borrowedBooks.size();
@@ -318,7 +304,6 @@ public class Library {
       System.out.println("--- End of List ---");
    }
 
-   // --- SAVE/LOAD (Saves books sorted by Title)
    public void saveCatalog(String filename) {
       try (PrintWriter writer = new PrintWriter(new File(filename))) {
          writer.println(FILE_HEADER);
@@ -339,7 +324,6 @@ public class Library {
       }
    }
 
-   // --- MAIN SYSTEM RUNNER ---
    public static void main(String[] args) {
       String SAVE_FILE = "library_catalog.txt";
 
@@ -384,7 +368,7 @@ public class Library {
                      scanner.nextLine();
                   } catch (InputMismatchException e) {
                      System.out.println("Invalid ISBN. Please enter digits only.");
-                     scanner.nextLine(); // Clear the buffer
+                     scanner.nextLine();
                      break;
                   }
 
@@ -395,14 +379,14 @@ public class Library {
                      scanner.nextLine();
                   } catch (InputMismatchException e) {
                      System.out.println("Invalid year. Please enter digits only.");
-                     scanner.nextLine(); // Clear the buffer
+                     scanner.nextLine();
                      break;
                   }
 
                   library.addBook(new Book(title, author, isbn, year));
                   break;
 
-               case 2: // Search Book
+               case 2:
                   System.out.print("Enter Title, Author, or ISBN " +
                         "(hyphens allowed for ISBN search): ");
                   String query = scanner.nextLine();
@@ -423,7 +407,7 @@ public class Library {
                   }
                   break;
 
-               case 3: // Borrow Book (by ISBN)
+               case 3:
                   System.out.print("Enter ISBN to borrow (digits only): ");
                   try {
                      long borrowIsbn = scanner.nextLong();
@@ -435,7 +419,7 @@ public class Library {
                   }
                   break;
 
-               case 4: // Return Book (by ISBN)
+               case 4:
                   System.out.print("Enter ISBN to return (digits only): ");
                   try {
                      long returnIsbn = scanner.nextLong();
@@ -447,15 +431,15 @@ public class Library {
                   }
                   break;
 
-               case 5: // View Available
+               case 5:
                   library.viewAvailableBooks(scanner);
                   break;
 
-               case 6: // View Borrowed
+               case 6:
                   library.viewBorrowedBooks(scanner);
                   break;
 
-               case 7: // Remove Book
+               case 7:
                   System.out.print("Enter ISBN of book to remove " +
                         "(digits only): ");
                   try {
@@ -468,11 +452,11 @@ public class Library {
                   }
                   break;
 
-               case 8: // Save Catalog (Now Sorted by Title)
+               case 8:
                   library.saveCatalog(SAVE_FILE);
                   break;
 
-               case 9: // Exit
+               case 9:
                   library.saveCatalog(SAVE_FILE);
                   running = false;
                   System.out.println("Exiting system. Goodbye!");
